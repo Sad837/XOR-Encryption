@@ -56,7 +56,7 @@ int main() {
     char choice[20];
     printf("Enter 'encrypt' or 'decrypt': ");
     scanf("%19s", choice);
-
+	while (getchar() != '\n'); // Clear the input buffer
     if (strcmp(choice, "encrypt") == 0) {
         char message[1000], filename[50], key[50];
         printf("Enter the message to encrypt: ");
