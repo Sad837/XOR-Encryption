@@ -46,7 +46,7 @@ void decryptFile(const char *filename, const char *key) {
 
     xorEncrypt(buffer, key);
 
-    printf("%s\n", buffer);
+	fwrite(buffer, 1, fileSize, stdout); // Output decrypted data to stdout
 
     free(buffer);
     fclose(file);
