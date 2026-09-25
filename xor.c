@@ -52,33 +52,70 @@ void decryptFile(const char *filename, const char *key) {
     fclose(file);
 }
 
+
+// Clears any leftover characters up to and including the next newline.
+void clearInputBuffer(void) {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+// Prompts for a key using fgets so empty input is readable as a zero-length
+// string instead of causing scanf to hang, and re-prompts until non-empty.
+void getKey(const char* prompt, char* key, size_t keySize) {
+    while (1) {
+        printf("%s", prompt);
+        fgets(key, (int)keySize, stdin);
+        key[strcspn(key, "\n")] = '\0';
+        if (strlen(key) > 0) {
+            break;
+        }
+        printf("Key cannot be empty. Please try again.\n");
+    }
+}
 int main() {
     char choice[20];
-    printf("Enter 'encrypt' or 'decrypt': ");
-    scanf("%19s", choice);
-	while (getchar() != '\n'); // Clear the input buffer
-    if (strcmp(choice, "encrypt") == 0) {
-        char message[1000], filename[50], key[50];
-        printf("Enter the message to encrypt: ");
-        fgets(message, sizeof(message), stdin);
-        message[strcspn(message, "\n")] = '\0';
-        printf("Enter the filename to save encrypted data: ");
-        scanf("%49s", filename);
-        printf("Enter the encryption key: ");
-        scanf("%49s", key);
 
-        encryptFile(filename, message, key);
-    } else if (strcmp(choice, "decrypt") == 0) {
-        char filename[50], key[50];
-        printf("Enter the filename to decrypt: ");
-        scanf("%49s", filename);
-        printf("Enter the decryption key: ");
-        scanf("%49s", key);
+    while (1) {
+        printf("Enter 'encrypt' or 'decrypt': ");
+        scanf("%19s", choice);
+        clearInputBuffer();
 
-        decryptFile(filename, key);
-    } else {
-        printf("Invalid choice.\n");
+        if (strcmp(choice, "encrypt") == 0) {
+            char message[1000], filename[50], key[50];
+
+            printf("Enter the message to encrypt: ");
+            fgets(message, sizeof(message), stdin);
+            if (strchr(message, '\n') == NULL) {
+                clearInputBuffer();
+            }
+            message[strcspn(message, "\n")] = '\0';
+
+            printf("Enter the filename to save encrypted data: ");
+            scanf("%49s", filename);
+            clearInputBuffer();
+
+            getKey("Enter the encryption key: ", key, sizeof(key));
+
+            encryptFile(filename, message, key);
+            break;
+        }
+        else if (strcmp(choice, "decrypt") == 0) {
+            char filename[50], key[50];
+
+            printf("Enter the filename to decrypt: ");
+            scanf("%49s", filename);
+            clearInputBuffer();
+
+            getKey("Enter the decryption key: ", key, sizeof(key));
+
+            decryptFile(filename, key);
+            break;
+        }
+        else {
+            printf("Invalid choice. Please enter 'encrypt' or 'decrypt'.\n");
+        }
     }
 
     return 0;
 }
+
+
